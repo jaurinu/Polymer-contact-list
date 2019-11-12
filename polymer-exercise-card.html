@@ -1,0 +1,110 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icons/communication-icons.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../iron-icons/maps-icons.html">
+<link rel="import" href="../paper-card/paper-card.html">
+
+<dom-module id="polymer-exercise-card">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      form{
+        margin-bottom: 2rem;
+      }
+      paper-card{
+        max-width: 500px;
+      }
+      .card-content > div{
+        text-align: center;
+      }
+      .card-content > div > img{
+        border: 2px solid orange;
+        border-radius: 100px;
+      }
+      ul{
+        list-style-type: none;
+        padding: 0;
+      }
+      ul > li > img{
+        width: 25px;
+      }
+    </style>
+    <h2>Contactos</h2>
+    <div>
+    <paper-input label="Name" type="text" name="name" id="name"></paper-input>
+    <paper-input label="Last name" type="text" name="last-name" id="last-name"></paper-input>
+    <paper-input label="GitHub" type="text" name="github" id="github"></paper-input>
+    <paper-input label="Email" type="email" name="email" id="email"></paper-input>
+    <paper-input label="Phone" type="tel" name="tel" id="phone"></paper-input>
+    <paper-button raised class="green" on-click="saveContact">Guardar</paper-button>
+    </div>
+    <template is="dom-repeat" items="[[contacts]]" as="contact" >
+    <paper-card>
+      <div class="card-content">
+        <div>
+        <img src="[[contact.picture.large]]">
+        </div>
+          <ul>
+          <li><iron-icon icon="icons:account-box"></iron-icon>Nombre de la persona: [[contact.name.first]] [[contact.name.last]] </li>
+          <li><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">GitHub: [[contact.login.username]]</li>
+          <li><iron-icon icon="icons:mail"></iron-icon>Correo electronico: [[contact.email]]</li>
+          <li><iron-icon icon="communication:call"></iron-icon>Telefono: [[contact.phone]]</li>
+          </ul>
+      </div>
+    </paper-card>
+  </template>
+  </template>
+
+  <script>
+    /**
+     * `polymer-exercise-card`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PolymerExerciseCard extends Polymer.Element {
+      static get is() { return 'polymer-exercise-card'; }
+      static get properties() {
+        return {
+          contacts: {
+            type: Array,
+            value:[]
+          },
+          contact: {
+            type: Array,
+            value:[]
+          }
+        };
+      }
+      connectedCallback() {
+        super.connectedCallback();
+        fetch('https://randomuser.me/api/?results=50')
+                .then(response => response.json())
+                .then(payload => {
+                  this.contacts = [...payload.results];
+                });
+      }
+      saveContact(){
+        const nameNode = this.shadowRoot.querySelector('#name');
+        const lastNameNode = this.shadowRoot.querySelector('#last-name');
+        const githubNode = this.shadowRoot.querySelector('#github');
+        const emailNode = this.shadowRoot.querySelector('#email');
+        const phoneNode = this.shadowRoot.querySelector('#phone');
+ 
+        this.contacts = [...this.contacts, {name:{first: nameNode.value, last: lastNameNode.value}, login:{username: githubNode.value}, email: emailNode.value, phone: phoneNode.value}]
+        console.log(this.contacts);
+        
+      }
+
+    }
+
+    window.customElements.define(PolymerExerciseCard.is, PolymerExerciseCard);
+  </script>
+</dom-module>
